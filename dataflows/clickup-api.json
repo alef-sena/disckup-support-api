@@ -1,0 +1,1917 @@
+[
+    {
+        "id": "9ae731e8a68d8a4a",
+        "type": "subflow",
+        "name": "Discord Markdown Formatting",
+        "info": "Format the text of a message in Discord's Markdown format into an array with the text formatted to be used by the [ClickUp API](https://clickup.com/api/developer-portal/commentformatting).\n\n## Inputs\n - **payload** Content of the message posted via Discord\n\n## Outputs\n - **payload** Message content formatted to be posted via the ClickUp API\n\n## Available formatting\n - **User Mention** <@123456789101112131>\n - **Bold** \\*\\*Example\\*\\*\n - **Italic** \\*Example\\*\n - **Bold+Italic** \\*\\*\\*Example\\*\\*\\*",
+        "category": "",
+        "in": [
+            {
+                "x": 100,
+                "y": 240,
+                "wires": [
+                    {
+                        "id": "e18b531d30b484a2"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1410,
+                "y": 240,
+                "wires": [
+                    {
+                        "id": "6d244a4a02794b22",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#5865F2",
+        "inputLabels": [
+            "msg.comment with the message text in Discord format"
+        ],
+        "outputLabels": [
+            "msg.payload with text formatted for the ClickUp API"
+        ],
+        "icon": "node-red-dashboard/ui_text.png"
+    },
+    {
+        "id": "e18b531d30b484a2",
+        "type": "function",
+        "z": "9ae731e8a68d8a4a",
+        "name": "Format Mentions",
+        "func": "const discordIdToClickup = global.get('discordIdToClickup') || {};\n\nconst comment = msg.comment;\nconst discordMentionRegex = /(<@\\d+>)/;\nconst splittedComment = comment.split(discordMentionRegex).filter(Boolean);\n\nconst formattedMentions = splittedComment.map(part => {\n    if (discordMentionRegex.test(part)) {\n        const discordId = part.split('<@')[1].split('>')[0];\n        return {\"type\": \"tag\",\"user\":{\"id\": discordIdToClickup[discordId].clickupId}};\n    }\n    return {\"text\": `${part}`};\n});\n\nmsg.payload = formattedMentions;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 240,
+        "wires": [
+            [
+                "41de9120d1c3ef32",
+                "c43957e274d3cf73"
+            ]
+        ]
+    },
+    {
+        "id": "41de9120d1c3ef32",
+        "type": "function",
+        "z": "9ae731e8a68d8a4a",
+        "name": "Format Bold Italic",
+        "func": "const comment = msg.payload;\n\nconst splittedBoldItalic = comment.map(part => {\n    if (part.hasOwnProperty(\"text\")) {\n        return part.text.split(\"***\");\n    }\n    return part;\n});\n\nlet formattedBoldItalic = splittedBoldItalic.map(part => {\n    if (Array.isArray(part)) {\n        return part.map((substr, i) => {\n            if (i % 2 !== 0) {\n                return {\"text\": substr, \"attributes\": { italic: true, bold: true }};\n            }\n            return {text: substr, attributes: {}};\n        });\n    }\n    return part;\n});\n\nformattedBoldItalic = formattedBoldItalic.map(item => {\n    if (Array.isArray(item)){\n        return item.filter(obj => obj.text !== \"\");\n    }\n    return item;\n});\n\nconst formattedComment = [];\n\nformattedBoldItalic.forEach(part => {\n    if (Array.isArray(part)) {\n        part.forEach(substr => formattedComment.push(substr));\n    } else {\n        formattedComment.push(part);\n    }\n});\n\nmsg.payload = formattedComment.filter(item => item !== undefined);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 240,
+        "wires": [
+            [
+                "9d5f42869c7c5d75",
+                "7e0fbe7313eabfd7"
+            ]
+        ]
+    },
+    {
+        "id": "6d244a4a02794b22",
+        "type": "function",
+        "z": "9ae731e8a68d8a4a",
+        "name": "Format Italic",
+        "func": "const comment = [...msg.payload];\n\nconst splittedItalic = comment.map(part => {\n    if (part.hasOwnProperty(\"text\") && Object.keys(part.attributes).length === 0) {\n        const split = part.text.split(\"*\");\n        const result = [];\n        split.forEach(item => {\n            result.push({text: item, attributes: {...part.attributes}});\n        })\n        return result;\n    }\n    return part;\n});\n\nconst formattedItalic = splittedItalic.map(part => {\n    if (Array.isArray(part)) {\n        part.map((obj, i) => {\n            if (i % 2 !== 0) {\n                obj.attributes.italic = true;\n            }\n        });\n        return part;\n    }\n    else{\n        return part;\n    }\n});\nmsg.formattedItalic = formattedItalic;\n\nconst formattedComment = [];\n\nformattedItalic.forEach(part => {\n    if (Array.isArray(part)) {\n        part.forEach(substr => formattedComment.push(substr));\n    } else {\n        formattedComment.push(part);\n    }\n});\n\nmsg.payload = formattedComment;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 240,
+        "wires": [
+            [
+                "cc5e93e18d0774f7"
+            ]
+        ]
+    },
+    {
+        "id": "7e0fbe7313eabfd7",
+        "type": "function",
+        "z": "9ae731e8a68d8a4a",
+        "name": "Format Bold",
+        "func": "const comment = [...msg.payload];\n\nconst splittedBold = comment.map(part => {\n    if (part.hasOwnProperty(\"text\") && Object.keys(part.attributes).length === 0) {\n        const split = part.text.split(\"**\");\n        const result = [];\n        split.forEach(item => {\n            result.push({text: item, attributes: {...part.attributes}});\n        })\n        return result;\n    }\n    return part;\n});\n\nconst formattedBold = splittedBold.map(part => {\n    if (Array.isArray(part)) {\n        part.map((obj, i) => {\n            if (i % 2 !== 0) {\n                obj.attributes.bold = true;\n            }\n        });\n        return part;\n    }\n    else{\n        return part;\n    }\n});\n\nconst formattedComment = [];\n\nformattedBold.forEach(part => {\n    if (Array.isArray(part)) {\n        part.forEach(substr => formattedComment.push(substr));\n    } else {\n        formattedComment.push(part);\n    }\n});\n\nmsg.payload = formattedComment;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 240,
+        "wires": [
+            [
+                "a8c4e8e557913f5a",
+                "6d244a4a02794b22"
+            ]
+        ]
+    },
+    {
+        "id": "9d5f42869c7c5d75",
+        "type": "debug",
+        "z": "9ae731e8a68d8a4a",
+        "d": true,
+        "name": "Format Bold Italic",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "c43957e274d3cf73",
+        "type": "debug",
+        "z": "9ae731e8a68d8a4a",
+        "d": true,
+        "name": "Format Mentions",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "cc5e93e18d0774f7",
+        "type": "debug",
+        "z": "9ae731e8a68d8a4a",
+        "d": true,
+        "name": "Format Italic",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1030,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "a8c4e8e557913f5a",
+        "type": "debug",
+        "z": "9ae731e8a68d8a4a",
+        "d": true,
+        "name": "Format Bold",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 850,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "5b81be3c1e42177e",
+        "type": "function",
+        "z": "9ae731e8a68d8a4a",
+        "d": true,
+        "name": "Format Inline Code",
+        "func": "const comment = msg.payload;\n\nconst splittedInlineCode = comment.map(part => {\n    if (!part.hasOwnProperty(\"attributes\")) {\n        return part.text.split(\"`\");\n    }\n    return part;\n});\n\nconst formattedItalic = splittedInlineCode.map(part => {\n    if (Array.isArray(part)) {\n        return part.map((substr, i) => {\n            if (i % 2 !== 0) {\n                return {\"text\": substr, \"attributes\": { italic: true }};\n            } else{\n                return {\"text\": substr};\n            }\n        });\n    }\n    return part;\n});\nmsg.formattedItalic = formattedItalic;\n\nconst formattedComment = [];\n\nformattedItalic.forEach(part => {\n    if (Array.isArray(part)) {\n        part.forEach(substr => formattedComment.push(substr));\n    } else {\n        formattedComment.push(part);\n    }\n});\n\nmsg.payload = formattedComment;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "426d4db5b8ab5ac3",
+        "type": "tab",
+        "label": "ClickUp API",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "405063c3dba1d3d1",
+        "type": "group",
+        "z": "426d4db5b8ab5ac3",
+        "name": "POST Attachments on Task",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "275daecbd7596f64",
+            "b3d6a5b99ca7a1cb",
+            "9230f80fad5b2035",
+            "f19563e141ea5176",
+            "5e7f2fc15d4305e4",
+            "8d94f64a4d1170ba",
+            "e7f295f1ce6f86e1"
+        ],
+        "x": 114,
+        "y": 999,
+        "w": 1512,
+        "h": 82
+    },
+    {
+        "id": "b4fad4e64f6a211f",
+        "type": "group",
+        "z": "426d4db5b8ab5ac3",
+        "name": "POST /comments",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "71610f996417ec27",
+            "f24cfab8c63d613f",
+            "3eb8a90c876fb5c4",
+            "1dfc4919eba3f028",
+            "c3a5e055d8c557d5",
+            "c83a16942dd8e7c4",
+            "7074c96f04287ed3",
+            "39d9669261a8f7aa",
+            "8db8538f92cf013e",
+            "c9782a8b2d662411",
+            "68ac79d1f2d4fdd3",
+            "97ee9bc200cda333",
+            "fd7d72f1e56e558e",
+            "3ad71d4826570121",
+            "758ef95bf7cacb20",
+            "d262e350bea054f9",
+            "94ae80f217d3ea2e",
+            "9586094ec0e9865e",
+            "32e42c797de3aa2b",
+            "f1aed8c5c9111d13",
+            "8bf9b4a242105f63",
+            "554298740ffebec1",
+            "3ed4545f51041211",
+            "914b1934bc119a66",
+            "d5bcf592c47ad97e",
+            "b5f5926389266da0",
+            "6f1fa4e233139b05"
+        ],
+        "x": 54,
+        "y": 499,
+        "w": 2952,
+        "h": 402
+    },
+    {
+        "id": "cded173b757bb5d4",
+        "type": "group",
+        "z": "426d4db5b8ab5ac3",
+        "name": "GET /comments",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "ced9ad59b5c1b9d6",
+            "aa64c90c60598ea8",
+            "c2138468ab547205",
+            "cc0e5ef712526564",
+            "784fe8211b56fba0",
+            "d1a3d0a98c645129",
+            "62866aa0463f87a2",
+            "d817149280aae1b4",
+            "3a7c99f25f6fec11",
+            "ef6d79fbe27ffcc2",
+            "7c3e1e106d978b18",
+            "dd3e6e195be8cc6d",
+            "7e6f50cacfcdfbfd",
+            "65e57561f8c1676e",
+            "2faa15c40460ae1a",
+            "fa0b7a60723fc1a7",
+            "94346d7c7640bcca",
+            "4cc5416c9917eb5c",
+            "6bc6a3ffbd3a776d",
+            "1960d770746cc861",
+            "8a09a35313a3d976",
+            "a61d5bfa0c245e25",
+            "893dd37f2fb464fd"
+        ],
+        "x": 54,
+        "y": 59,
+        "w": 2152,
+        "h": 382
+    },
+    {
+        "id": "4c9f3502ef18adcd",
+        "type": "group",
+        "z": "426d4db5b8ab5ac3",
+        "name": "Catch ERROR",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "e6c768d9d9e23d87",
+            "72be80fdb9e9627b",
+            "478aa08a428f7c25",
+            "dceea4504a205f24"
+        ],
+        "x": 54,
+        "y": 1439,
+        "w": 792,
+        "h": 122
+    },
+    {
+        "id": "1a4781473833cde9",
+        "type": "group",
+        "z": "426d4db5b8ab5ac3",
+        "name": "GET a ClickUp Mapping",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "274dab1b9178076f",
+            "a8cab0ca632b27e5",
+            "8b75bb031e50deb6",
+            "f2a4c6c09de830fe",
+            "14b02d03601beefa",
+            "11a1edb18e91013a",
+            "5bd69097b77330e4",
+            "2f3212c0762a21c3",
+            "aa9b25dd38fc131f",
+            "de442695702ed107",
+            "34a3e6275d254027",
+            "f416e69bcef68726"
+        ],
+        "x": 54,
+        "y": 1139,
+        "w": 1392,
+        "h": 242
+    },
+    {
+        "id": "7e44499a11bd693e",
+        "type": "link in",
+        "z": "426d4db5b8ab5ac3",
+        "name": "",
+        "links": [
+            "6809e84f3f3f91f7",
+            "6f1fa4e233139b05"
+        ],
+        "x": 75,
+        "y": 1040,
+        "wires": [
+            [
+                "e7f295f1ce6f86e1"
+            ]
+        ]
+    },
+    {
+        "id": "955322076f8a054a",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "name": "Post Attachment",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "8d94f64a4d1170ba",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "405063c3dba1d3d1",
+        "name": "Attachment Posted",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "275daecbd7596f64",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "405063c3dba1d3d1",
+        "name": "Post Attachments on Task",
+        "func": "const boundary = '----FORMDATA';\n\nconst createFileRequest = (\n    data,\n    boundary\n) => {\n    const header = (\n        `--${boundary}\\r\\n`\n        + `Content-Disposition: form-data; name=\"attachment\"; filename=\"${msg.attachment.name}\"`\n        + '\\r\\n'\n        + `Content-Type: application/octet-stream`\n        + '\\r\\n\\r\\n'\n    );\n    return Buffer.concat([\n        Buffer.from(header, 'utf-8'),\n        data,\n        Buffer.from('\\r\\n', 'utf-8'),\n    ]);\n};\n\nconst buildRequestOptions = (boundary, length) => (\n    {\n        method: 'POST',\n        hostname: 'api.clickup.com',\n        path: `/api/v2/task/${msg.taskId}/attachment?custom_task_ids=true&team_id=${global.get(\"clickUpSettings.general.teamId\")}`,\n        headers: {\n            'Content-Type': `multipart/form-data; boundary=${boundary}`,\n            'Content-Length': length,\n            Accept: '*/*',\n            Authorization: msg.clickupToken\n        },\n    }\n);\n\nconst uploadRequest = createFileRequest(msg.payload, boundary);\n\nconst footer = `--${boundary}--`;\n\nconst body = Buffer.concat([\n    uploadRequest,\n    Buffer.from(footer, 'utf-8'),\n]);\n\nconst options = buildRequestOptions(boundary, body.length);\n\nconst req = https.request(options, (res) => {\n    console.log(`status: ${res.statusCode}`);\n\n    res.on('data', (chunk) => {\n        // node.warn(`BODY: ${chunk}`);\n    });\n\n    res.on('end', () => {\n        node.send(msg);\n    });\n});\n\nreq.on('error', (e) => {\n    node.error(`Problem with request: ${e.message}`);\n});\n\nreq.write(body);\n\nreq.end();",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "stream",
+                "module": "stream"
+            },
+            {
+                "var": "https",
+                "module": "https"
+            }
+        ],
+        "x": 1240,
+        "y": 1040,
+        "wires": [
+            [
+                "8d94f64a4d1170ba"
+            ]
+        ]
+    },
+    {
+        "id": "b3d6a5b99ca7a1cb",
+        "type": "change",
+        "z": "426d4db5b8ab5ac3",
+        "g": "405063c3dba1d3d1",
+        "name": "Set file url and taskId",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "attachments",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "taskId",
+                "pt": "msg",
+                "to": "req.query.taskId",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 440,
+        "y": 1040,
+        "wires": [
+            [
+                "9230f80fad5b2035"
+            ]
+        ]
+    },
+    {
+        "id": "9230f80fad5b2035",
+        "type": "split",
+        "z": "426d4db5b8ab5ac3",
+        "g": "405063c3dba1d3d1",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 610,
+        "y": 1040,
+        "wires": [
+            [
+                "5e7f2fc15d4305e4"
+            ]
+        ]
+    },
+    {
+        "id": "f19563e141ea5176",
+        "type": "http request",
+        "z": "426d4db5b8ab5ac3",
+        "g": "405063c3dba1d3d1",
+        "name": "",
+        "method": "GET",
+        "ret": "bin",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 1030,
+        "y": 1040,
+        "wires": [
+            [
+                "275daecbd7596f64"
+            ]
+        ]
+    },
+    {
+        "id": "5e7f2fc15d4305e4",
+        "type": "change",
+        "z": "426d4db5b8ab5ac3",
+        "g": "405063c3dba1d3d1",
+        "name": "Set url and save attachment",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "payload.url",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "attachment",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 810,
+        "y": 1040,
+        "wires": [
+            [
+                "f19563e141ea5176"
+            ]
+        ]
+    },
+    {
+        "id": "71610f996417ec27",
+        "type": "http in",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "POST /clickup/comment",
+        "url": "/clickup/comment",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 760,
+        "wires": [
+            [
+                "c3a5e055d8c557d5"
+            ]
+        ]
+    },
+    {
+        "id": "f24cfab8c63d613f",
+        "type": "http request",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Request to ClickUp API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 1670,
+        "y": 640,
+        "wires": [
+            [
+                "68ac79d1f2d4fdd3",
+                "6f1fa4e233139b05"
+            ]
+        ]
+    },
+    {
+        "id": "3eb8a90c876fb5c4",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "discordId Exists ?",
+        "property": "discordIdToClickup",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "discordId",
+                "vt": "msg"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 750,
+        "y": 700,
+        "wires": [
+            [
+                "1dfc4919eba3f028"
+            ],
+            [
+                "c9782a8b2d662411"
+            ]
+        ]
+    },
+    {
+        "id": "1dfc4919eba3f028",
+        "type": "change",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Token Picker",
+        "rules": [
+            {
+                "t": "set",
+                "p": "clickupToken",
+                "pt": "msg",
+                "to": "discordIdToClickup[msg.discordId].clickupToken",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 940,
+        "y": 640,
+        "wires": [
+            [
+                "b5f5926389266da0"
+            ]
+        ]
+    },
+    {
+        "id": "c3a5e055d8c557d5",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Check Errors",
+        "func": "msg.errors = []\nif(msg.req.query.discordId == null){\n    msg.errors.push(\"Missing Discord ID in params\")\n}\nif(msg.payload.comment == null){\n    msg.errors.push(\"Missing Comment in body\")\n}\nif(msg.req.query.taskId == null){\n    msg.errors.push(\"Missing Task ID in params\")\n}\n\nmsg.discordId = msg.req.query.discordId;\nmsg.comment = msg.payload.comment;\nmsg.taskId = msg.req.query.taskId;\nmsg.attachments = msg.payload.attachments || [];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 760,
+        "wires": [
+            [
+                "7074c96f04287ed3",
+                "94ae80f217d3ea2e"
+            ]
+        ]
+    },
+    {
+        "id": "c83a16942dd8e7c4",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Response: Missing Params (412)",
+        "statusCode": "412",
+        "headers": {},
+        "x": 1040,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "7074c96f04287ed3",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Has errors ?",
+        "property": "errors",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 570,
+        "y": 760,
+        "wires": [
+            [
+                "3eb8a90c876fb5c4"
+            ],
+            [
+                "8db8538f92cf013e"
+            ]
+        ]
+    },
+    {
+        "id": "39d9669261a8f7aa",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Response: User ID Not Found (404)",
+        "statusCode": "404",
+        "headers": {},
+        "x": 1250,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "8db8538f92cf013e",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": \"Missing params or body elements\",\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 412,\n    \"type\": \"https://httpstatuses.com/412\",\n    \"errors\": msg.errors\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 820,
+        "wires": [
+            [
+                "c83a16942dd8e7c4",
+                "8bf9b4a242105f63"
+            ]
+        ]
+    },
+    {
+        "id": "c9782a8b2d662411",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": `Property \"discordId\" not found in database`,\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 404,\n    \"type\": \"https://httpstatuses.com/404\",\n    \"errors\": [`Property: \"discordId\" not found in database`]\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 760,
+        "wires": [
+            [
+                "39d9669261a8f7aa",
+                "f1aed8c5c9111d13"
+            ]
+        ]
+    },
+    {
+        "id": "68ac79d1f2d4fdd3",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Has OK response ?",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "200",
+                "vt": "num",
+                "v2": "299",
+                "v2t": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1900,
+        "y": 640,
+        "wires": [
+            [
+                "97ee9bc200cda333"
+            ],
+            [
+                "d262e350bea054f9"
+            ]
+        ]
+    },
+    {
+        "id": "97ee9bc200cda333",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Create GET Request",
+        "func": "msg.method = \"GET\";\nmsg.url = `https://api.clickup.com/api/v2/task/${msg.taskId}/?custom_task_ids=true&team_id=${global.get(\"clickUpSettings.general.teamId\")}&include_subtasks=true`;\n\nmsg.headers = {\n    \"Authorization\": msg.clickupToken\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2120,
+        "y": 580,
+        "wires": [
+            [
+                "fd7d72f1e56e558e"
+            ]
+        ]
+    },
+    {
+        "id": "fd7d72f1e56e558e",
+        "type": "http request",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Request to ClickUp API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 2350,
+        "y": 580,
+        "wires": [
+            [
+                "d5bcf592c47ad97e",
+                "9586094ec0e9865e"
+            ]
+        ]
+    },
+    {
+        "id": "3ad71d4826570121",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Response: Successful (200)",
+        "statusCode": "",
+        "headers": {},
+        "x": 2850,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "758ef95bf7cacb20",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Response: Incorrect taskId (401)",
+        "statusCode": "401",
+        "headers": {},
+        "x": 2400,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "d262e350bea054f9",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": \"Incorrect taskId or empty comment\",\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 401,\n    \"type\": \"https://httpstatuses.com/401\",\n    \"errors\": [\"Incorrect taskId or empty comment\"]\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2130,
+        "y": 700,
+        "wires": [
+            [
+                "758ef95bf7cacb20",
+                "32e42c797de3aa2b"
+            ]
+        ]
+    },
+    {
+        "id": "94ae80f217d3ea2e",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "POST /clickup/comment",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "9586094ec0e9865e",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "POST /clickup/comment Res: 200",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2620,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "32e42c797de3aa2b",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "POST /clickup/comment Res: 401",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2400,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "f1aed8c5c9111d13",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "POST /clickup/comment Res: 404",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1240,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "8bf9b4a242105f63",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "POST /clickup/comment Res: 412",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "554298740ffebec1",
+        "type": "inject",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "DEV",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "req.query.taskId",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"discordId\":\"\",\"comment\":\"Hey!\",\"attachments\":[]}",
+        "payloadType": "json",
+        "x": 250,
+        "y": 720,
+        "wires": [
+            [
+                "c3a5e055d8c557d5"
+            ]
+        ]
+    },
+    {
+        "id": "3ed4545f51041211",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Create POST Request ",
+        "func": "msg.method = \"POST\";\nmsg.url = `https://api.clickup.com/api/v2/task/${msg.taskId}/comment?custom_task_ids=true&team_id=${global.get(\"clickUpSettings.general.teamId\")}`;\n\nmsg.headers = {\n    \"content-type\": \"application/json\",\n    \"Authorization\": msg.clickupToken\n}\n\nconst comment = msg.payload;\nmsg.formattedComment = msg.payload;\n\n// body\nmsg.payload = {\n    comment,\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1430,
+        "y": 640,
+        "wires": [
+            [
+                "f24cfab8c63d613f",
+                "914b1934bc119a66"
+            ]
+        ]
+    },
+    {
+        "id": "ced9ad59b5c1b9d6",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Build GET Request",
+        "func": "msg.method = \"GET\";\nmsg.url = `https://api.clickup.com/api/v2/task/${msg.taskId}/?custom_task_ids=true&team_id=${global.get(\"clickUpSettings.general.teamId\")}&include_subtasks=true`;\n\nmsg.headers = {\n    \"content-type\": \"application/json\",\n    \"Authorization\": msg.clickupToken\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1070,
+        "y": 180,
+        "wires": [
+            [
+                "aa64c90c60598ea8",
+                "893dd37f2fb464fd"
+            ]
+        ]
+    },
+    {
+        "id": "aa64c90c60598ea8",
+        "type": "http request",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Request to ClickUp API",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 1290,
+        "y": 180,
+        "wires": [
+            [
+                "6bc6a3ffbd3a776d"
+            ]
+        ]
+    },
+    {
+        "id": "c2138468ab547205",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Response: Successful (200)",
+        "statusCode": "",
+        "headers": {},
+        "x": 1970,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "cc0e5ef712526564",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Check Errors",
+        "func": "msg.errors = []\nif(msg.payload.discordId == null){\n    msg.errors.push(\"Missing Discord ID in params\")\n}\nif(msg.payload.taskId == null){\n    msg.errors.push(\"Missing Task ID in params\")\n}\n\nmsg.discordId = msg.payload.discordId;\nmsg.taskId = msg.payload.taskId;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 300,
+        "wires": [
+            [
+                "784fe8211b56fba0",
+                "65e57561f8c1676e"
+            ]
+        ]
+    },
+    {
+        "id": "784fe8211b56fba0",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Has errors ?",
+        "property": "errors",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 530,
+        "y": 300,
+        "wires": [
+            [
+                "d817149280aae1b4"
+            ],
+            [
+                "d1a3d0a98c645129"
+            ]
+        ]
+    },
+    {
+        "id": "d1a3d0a98c645129",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": \"Missing params elements\",\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 412,\n    \"type\": \"https://httpstatuses.com/412\",\n    \"errors\": msg.errors\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 360,
+        "wires": [
+            [
+                "62866aa0463f87a2",
+                "2faa15c40460ae1a"
+            ]
+        ]
+    },
+    {
+        "id": "62866aa0463f87a2",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Response: Missing Params (412)",
+        "statusCode": "412",
+        "headers": {},
+        "x": 1000,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "d817149280aae1b4",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "discordId exists ?",
+        "property": "discordIdToClickup",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "payload.discordId",
+                "vt": "msg"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 710,
+        "y": 240,
+        "wires": [
+            [
+                "7c3e1e106d978b18"
+            ],
+            [
+                "3a7c99f25f6fec11"
+            ]
+        ]
+    },
+    {
+        "id": "3a7c99f25f6fec11",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": `Property: \"discordId\" not found in database`,\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 404,\n    \"type\": \"https://httpstatuses.com/404\",\n    \"errors\": [`Property: \"discordId\" not found in database`]\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 300,
+        "wires": [
+            [
+                "ef6d79fbe27ffcc2",
+                "fa0b7a60723fc1a7"
+            ]
+        ]
+    },
+    {
+        "id": "ef6d79fbe27ffcc2",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Response: User ID Not Found (404)",
+        "statusCode": "404",
+        "headers": {},
+        "x": 1210,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "7c3e1e106d978b18",
+        "type": "change",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "token picker",
+        "rules": [
+            {
+                "t": "set",
+                "p": "clickupToken",
+                "pt": "msg",
+                "to": "discordIdToClickup[msg.payload.discordId].clickupToken",
+                "tot": "global"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 180,
+        "wires": [
+            [
+                "ced9ad59b5c1b9d6"
+            ]
+        ]
+    },
+    {
+        "id": "dd3e6e195be8cc6d",
+        "type": "http in",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "GET /clickup/task",
+        "url": "/clickup/task",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 300,
+        "wires": [
+            [
+                "cc0e5ef712526564"
+            ]
+        ]
+    },
+    {
+        "id": "7e6f50cacfcdfbfd",
+        "type": "change",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Prepare response",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t    \"taskName\": $.payload.name,\t    \"taskUrl\": $.payload.url\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1730,
+        "y": 140,
+        "wires": [
+            [
+                "c2138468ab547205",
+                "94346d7c7640bcca"
+            ]
+        ]
+    },
+    {
+        "id": "65e57561f8c1676e",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "GET /clickup/task",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "2faa15c40460ae1a",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "GET /clickup/task Res: 412",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 980,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "fa0b7a60723fc1a7",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "GET /clickup/task Res: 404",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1180,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "94346d7c7640bcca",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "GET /clickup/task Res: 200",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1960,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "4cc5416c9917eb5c",
+        "type": "inject",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "DEV",
+        "props": [
+            {
+                "p": "payload.discordId",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "p": "payload.taskId",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 210,
+        "y": 260,
+        "wires": [
+            [
+                "cc0e5ef712526564"
+            ]
+        ]
+    },
+    {
+        "id": "6bc6a3ffbd3a776d",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Has OK response ?",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "200",
+                "vt": "num",
+                "v2": "299",
+                "v2t": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1520,
+        "y": 180,
+        "wires": [
+            [
+                "7e6f50cacfcdfbfd"
+            ],
+            [
+                "1960d770746cc861"
+            ]
+        ]
+    },
+    {
+        "id": "1960d770746cc861",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": \"Unauthorized User\",\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 401,\n    \"type\": \"https://httpstatuses.com/401\",\n    \"errors\": [\"Unauthorized user\"]\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1750,
+        "y": 220,
+        "wires": [
+            [
+                "a61d5bfa0c245e25",
+                "8a09a35313a3d976"
+            ]
+        ]
+    },
+    {
+        "id": "8a09a35313a3d976",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "GET /clickup/task Res: 401",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2000,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "a61d5bfa0c245e25",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "Response: Unauthorized User (401)",
+        "statusCode": "401",
+        "headers": {},
+        "x": 2030,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "e6c768d9d9e23d87",
+        "type": "catch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "4c9f3502ef18adcd",
+        "name": "Catch All Errors",
+        "scope": null,
+        "uncaught": false,
+        "x": 160,
+        "y": 1520,
+        "wires": [
+            [
+                "478aa08a428f7c25",
+                "dceea4504a205f24"
+            ]
+        ]
+    },
+    {
+        "id": "72be80fdb9e9627b",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "4c9f3502ef18adcd",
+        "name": "Response: Internal Server Error (500)",
+        "statusCode": "500",
+        "headers": {},
+        "x": 660,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "478aa08a428f7c25",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "4c9f3502ef18adcd",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": \"Internal Server Error\",\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 500,\n    \"type\": \"https://httpstatuses.com/500\",\n    \"errors\": [`An error occurred while processing the request to the ClickUp REST API. Error: '${msg.error.message}'`]\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 1520,
+        "wires": [
+            [
+                "72be80fdb9e9627b"
+            ]
+        ]
+    },
+    {
+        "id": "dceea4504a205f24",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "4c9f3502ef18adcd",
+        "name": "ERROR",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 320,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "893dd37f2fb464fd",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "cded173b757bb5d4",
+        "name": "GET /clickup/task Prepare Request",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1330,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "914b1934bc119a66",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "POST /clickup/comment Prepare Request",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1730,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "d5bcf592c47ad97e",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "Prepare Response (200)",
+        "func": "let attachments = msg.attachments;\n\nattachments = attachments.map(att => {\n    return {\n        id: att.id,\n        name: att.name,\n        url: att.url,\n        contentType: att.contentType,\n    }\n});\n\nmsg.payload = {\n    discordUserId: msg.discordId,\n    clickupUserId: msg.payload.creator.id,\n    taskId: msg.taskId,\n    taskName: msg.payload.name,\n    taskUrl: msg.payload.url,\n    comment: msg.formattedComment,\n    attachments,\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2590,
+        "y": 580,
+        "wires": [
+            [
+                "3ad71d4826570121"
+            ]
+        ]
+    },
+    {
+        "id": "b5f5926389266da0",
+        "type": "subflow:9ae731e8a68d8a4a",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "",
+        "x": 1170,
+        "y": 640,
+        "wires": [
+            [
+                "3ed4545f51041211"
+            ]
+        ]
+    },
+    {
+        "id": "e7f295f1ce6f86e1",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "405063c3dba1d3d1",
+        "name": "Has Attachments?",
+        "property": "attachments",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 230,
+        "y": 1040,
+        "wires": [
+            [
+                "b3d6a5b99ca7a1cb",
+                "955322076f8a054a"
+            ]
+        ]
+    },
+    {
+        "id": "6f1fa4e233139b05",
+        "type": "link out",
+        "z": "426d4db5b8ab5ac3",
+        "g": "b4fad4e64f6a211f",
+        "name": "post-attachments",
+        "mode": "link",
+        "links": [
+            "7e44499a11bd693e"
+        ],
+        "x": 1815,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "274dab1b9178076f",
+        "type": "http in",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "GET /clickup/mapping",
+        "url": "/clickup/mapping",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 180,
+        "y": 1260,
+        "wires": [
+            [
+                "a8cab0ca632b27e5",
+                "8b75bb031e50deb6"
+            ]
+        ]
+    },
+    {
+        "id": "a8cab0ca632b27e5",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "GET /clickup/mapping",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 410,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "8b75bb031e50deb6",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Check Errors",
+        "func": "msg.errors = [];\n\nif(msg.payload.mappingName == null){\n    msg.errors.push(\"Missing Mapping Name in query params\");\n}\n\nmsg.pageId = msg.payload.mappingName;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 1260,
+        "wires": [
+            [
+                "f2a4c6c09de830fe"
+            ]
+        ]
+    },
+    {
+        "id": "f2a4c6c09de830fe",
+        "type": "switch",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Has errors ?",
+        "property": "errors",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 550,
+        "y": 1260,
+        "wires": [
+            [
+                "2f3212c0762a21c3"
+            ],
+            [
+                "14b02d03601beefa"
+            ]
+        ]
+    },
+    {
+        "id": "14b02d03601beefa",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Prepare error messages",
+        "func": "msg.payload = {\n    \"title\": \"Missing params elements\",\n    \"details\": \"Please refer to the errors property for additional details.\",\n    \"status\": 412,\n    \"type\": \"https://httpstatuses.com/412\",\n    \"errors\": msg.errors\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 1300,
+        "wires": [
+            [
+                "11a1edb18e91013a",
+                "5bd69097b77330e4"
+            ]
+        ]
+    },
+    {
+        "id": "11a1edb18e91013a",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Response: Missing Params (412)",
+        "statusCode": "412",
+        "headers": {},
+        "x": 1020,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "5bd69097b77330e4",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "GET /clickup/mapping Res: 412",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1020,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "2f3212c0762a21c3",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Build File Name",
+        "func": "const basePath = global.get(\"clickUpSettings.dataStorage.basePath\") || \"/data/mappings/clickup\";\nconst mappingName = msg.payload.mappingName;\n\nmsg.filename = `${basePath}/${mappingName}.json`;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 1220,
+        "wires": [
+            [
+                "aa9b25dd38fc131f"
+            ]
+        ]
+    },
+    {
+        "id": "aa9b25dd38fc131f",
+        "type": "file in",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Read File",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 880,
+        "y": 1220,
+        "wires": [
+            [
+                "de442695702ed107"
+            ]
+        ]
+    },
+    {
+        "id": "de442695702ed107",
+        "type": "function",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Parse Response",
+        "func": "const fileContent = JSON.parse(msg.payload);\n\nmsg.payload = fileContent;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1050,
+        "y": 1220,
+        "wires": [
+            [
+                "f416e69bcef68726",
+                "34a3e6275d254027"
+            ]
+        ]
+    },
+    {
+        "id": "34a3e6275d254027",
+        "type": "debug",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "Prepare Response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1250,
+        "y": 1180,
+        "wires": []
+    },
+    {
+        "id": "f416e69bcef68726",
+        "type": "http response",
+        "z": "426d4db5b8ab5ac3",
+        "g": "1a4781473833cde9",
+        "name": "GET /clickup/mapping (200)",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1290,
+        "y": 1220,
+        "wires": []
+    }
+]

@@ -1,0 +1,1421 @@
+[
+    {
+        "id": "08a6082ba6a858b0",
+        "type": "subflow",
+        "name": "Discord ID ->  Name, ClickUp Token, ClickUp ID",
+        "info": "",
+        "category": "",
+        "in": [],
+        "out": [],
+        "env": [],
+        "meta": {},
+        "color": "#3FADB5",
+        "icon": "node-red-dashboard/ui_form.png"
+    },
+    {
+        "id": "13e3163547159a2a",
+        "type": "ui_template",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "group": "21fec1141a7e3d9b",
+        "name": "Update Style",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<div class=\"card\">\n  <div class=\"container\">\n    <p>Tabela destinada a manter informações pessoais sobre os usuários do Discord e do Board do ClickUp. São <b>de suma importância</b> para o funcionamento correto da API.</p>\n    <br>\n    <p>Preencha os campos requeridos e clique em <b>SUBMIT</b></p>\n    <br>\n    <p>Caso nenhum registro da tabela seja visível, clique no botão <b>REFRESH</b>. Se a tabela permanecer em branco e nenhum pop-up com uma mensagem de erro for exibida <b>significa que a tabela está vazia</b>. Insira algum registro e clique em <b>SUBMIT</b> para que a tabela seja exibida.</p>\n  </div>\n</div>\n\n<style>\n    :root {\n      --main-bg-color:#7b2cbe;\n    }\n\n    .row {\n      display: flex;\n      justify-content: center;\n      align-items: center;\n    }\n    \n    .card {\n      border-left: 3px solid var(--main-bg-color);;\n      border-radius: 5px;\n      box-shadow: 7px 7px 13px 0px rgba(50, 50, 50, 0.22);\n      padding: 30px;\n      margin: 20px;\n      width: 400px;\n      transition: all 0.3s ease-out;\n    }\n\n    .card p {\n      color: #a3a5ae;\n      font-size: 16px;\n      overflow: auto;\n    }\n    \n    md-sidenav {\n        background-color: #502773 !important;\n    }\n    .md-list-item-inner > ui-icon,  .md-list-item-inner > p {\n        /*color: white !important;*/\n    }\n    .nr-menu-item-active div button {\n        border-right: 2px solid white;\n    }\n    .body.nr-dashboard-theme md-sidenav div.md-list-item-inner {\n    /*color: white !important;*/\n    }\n    .cardPanel {\n        border: 1px solid black;\n        /*border-radius: 5px;*/\n        padding: 0px 10px 10px 10px;\n        \n    }\n    .cardPanel > .nr-dashboard-cardtitle  {\n        margin-left: 0px !important;\n        margin-bottom: 8px !important;\n        width: auto !important;\n        text-align: center;\n    }\n    .senseUpLogo {\n        /*width: 270px !important;*/\n        /*top: -40px !important;*/\n    }\n    /*button {*/\n        /*width: 100px !important;*/\n    /*    border-radius: 10px !important;*/\n        /*padding-left: 4px !important;*/\n    /*}*/\n\n    .removeButton  {\n        padding: 0px 5px 0px 13px !important;\n    }\n    .refreshButton {\n        padding: 0px 13px 0px 5px !important;\n    }\n    .tabulator {\n        /*width: 290px !important;*/\n        /*padding: -0 1px 0 14px !important;*/\n    }\n    .tabulator-header {\n        border-bottom: 1px solid #7b2cbe !important;\n        /*width: 289px !important;*/\n        color: white !important;\n        margin-left: 0px !important;\n    }\n    .tabulator-cell {\n        border-left: 1px solid #7b2cbe !important;\n        border-right: 1px solid #7b2cbe !important;\n        border-bottom: 1px solid #7b2cbe !important;\n    }\n    .tabulator-col {\n        border-left: 1px solid #7b2cbe !important;\n        border-right: 1px solid #7b2cbe !important;\n        border-top: 1px solid #7b2cbe !important;\n        background-color: #7b2cbe !important;\n        \n    }\n\n</style>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ab63df808ad2f499",
+        "type": "ui_template",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "group": "2fea291cef3e8285",
+        "name": "Mapping Table Style",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    :root {\n      --main-bg-color:#7b2cbe;\n    }\n\n    .row {\n      display: flex;\n      justify-content: center;\n      align-items: center;\n    }\n    \n    .card {\n      border-left: 3px solid var(--main-bg-color);;\n      border-radius: 5px;\n      box-shadow: 7px 7px 13px 0px rgba(50, 50, 50, 0.22);\n      padding: 30px;\n      margin: 20px;\n      width: 400px;\n      transition: all 0.3s ease-out;\n    }\n\n    .card p {\n      color: #a3a5ae;\n      font-size: 16px;\n      overflow: auto;\n    }\n    \n    md-sidenav {\n        background-color: #502773 !important;\n    }\n    .md-list-item-inner > ui-icon,  .md-list-item-inner > p {\n        /*color: white !important;*/\n    }\n    .nr-menu-item-active div button {\n        border-right: 2px solid white;\n    }\n    .body.nr-dashboard-theme md-sidenav div.md-list-item-inner {\n    /*color: white !important;*/\n    }\n    .cardPanel {\n        border: 1px solid black;\n        /*border-radius: 5px;*/\n        padding: 0px 10px 10px 10px;\n        \n    }\n    .cardPanel > .nr-dashboard-cardtitle  {\n        margin-left: 0px !important;\n        margin-bottom: 8px !important;\n        width: auto !important;\n        text-align: center;\n    }\n    .senseUpLogo {\n        /*width: 270px !important;*/\n        /*top: -40px !important;*/\n    }\n    /*button {*/\n        /*width: 100px !important;*/\n    /*    border-radius: 10px !important;*/\n        /*padding-left: 4px !important;*/\n    /*}*/\n\n    .removeButton  {\n        padding: 0px 5px 0px 13px !important;\n    }\n    .refreshButton {\n        padding: 0px 13px 0px 5px !important;\n    }\n    .tabulator {\n        /*width: 290px !important;*/\n        /*padding: -0 1px 0 14px !important;*/\n    }\n    .tabulator-header {\n        border-bottom: 1px solid #7b2cbe !important;\n        /*width: 289px !important;*/\n        color: white !important;\n        margin-left: 0px !important;\n    }\n    .tabulator-cell {\n        border-left: 1px solid #7b2cbe !important;\n        border-right: 1px solid #7b2cbe !important;\n        border-bottom: 1px solid #7b2cbe !important;\n    }\n    .tabulator-col {\n        border-left: 1px solid #7b2cbe !important;\n        border-right: 1px solid #7b2cbe !important;\n        border-top: 1px solid #7b2cbe !important;\n        background-color: #7b2cbe !important;\n        \n    }\n\n</style>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 380,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2bb3acf46f1a12c3",
+        "type": "ui_button",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Download Button",
+        "group": "21fec1141a7e3d9b",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "GET THE MAPPING FILE",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#7B2CBE",
+        "className": "",
+        "icon": "",
+        "payload": "discordIdToClickup",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "10b0cb59447e081e"
+            ]
+        ]
+    },
+    {
+        "id": "10b0cb59447e081e",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Build Download Button Template",
+        "func": "const url = `${global.get(\"clickUpSettings.general.flowBaseUrl\")}/clickup/mapping?mappingName=${msg.payload}`;\n\nmsg.template = `\n<!DOCTYPE html>\n<html>\n    <head>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <link rel=\"stylesheet\" href=\"https://www.w3schools.com/w3css/4/w3.css\">\n        <style>\n        .tooltip {\n          position: relative;\n          display: inline-block;\n        }\n        \n        .tooltypetext {\n            padding: 30px;\n            \n        }\n        \n        .tooltip .tooltiptext {\n          visibility: hidden;\n          width: 300px;\n          background-color: #555;\n          color: #fff;\n          text-align: center;\n          border-radius: 6px;\n          padding: 20px;\n          position: absolute;\n          z-index: 1;\n          bottom: 150%;\n          left: 50%;\n          margin-left: -75px;\n          opacity: 0;\n          transition: opacity 0.3s;\n          border: none\n        }\n        \n        .tooltip .tooltiptext::after {\n          content: \"\";\n          position: absolute;\n          top: 100%;\n          left: 50%;\n          margin-left: -5px;\n        }\n        \n        .tooltip:hover .tooltiptext {\n          visibility: visible;\n          opacity: 1;\n        }\n        \n        .btn {\n          background-color: #0094CE;\n          border: none;\n          color: white;\n          padding: 12px 16px;\n          font-size: 16px;\n          cursor: pointer;\n        }\n\n        .btn:hover {\n          background-color: #00AAED;\n        }\n        </style>\n    </head>\n<body>\n\n<h4>\n\n<div class=\"row\" style=\"margin-top:5px\">\n     <a href=\"${url}\" target=\"_blank\" />\n        <button class=\"btn\"><i class=\"fa fa-download\">\n        <span class=\"tooltiptext\" id=\"myTooltip\">Download the Mapping File</span>\n        </i></button>\n    </a>\n</div>\n\n</body>\n</html>\n\n`\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 160,
+        "wires": [
+            [
+                "bb5aa998913a67a7",
+                "fdbb30f919dae41f"
+            ]
+        ]
+    },
+    {
+        "id": "bb5aa998913a67a7",
+        "type": "ui_template",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "group": "21fec1141a7e3d9b",
+        "name": "ui_template",
+        "order": 6,
+        "width": 10,
+        "height": 2,
+        "format": "",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 650,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fdbb30f919dae41f",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Download discordIdToClickup.json",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 730,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "1cfb4fb60da02a15",
+        "type": "ui_form",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "",
+        "label": "Add or Update a Record",
+        "group": "21fec1141a7e3d9b",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "options": [
+            {
+                "label": "Discord ID",
+                "value": "discordId",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Name",
+                "value": "name",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "ClickUp ID",
+                "value": "clickupId",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "ClickUp Token",
+                "value": "clickupToken",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "discordId": "",
+            "name": "",
+            "clickupId": "",
+            "clickupToken": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 430,
+        "y": 260,
+        "wires": [
+            [
+                "af1f076cd13b2147"
+            ]
+        ]
+    },
+    {
+        "id": "af1f076cd13b2147",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Update global.discordIdToClickup",
+        "func": "let discordIdToClickup = global.get('discordIdToClickup') || {};\n\nmsg.newRecord = true;\n\nif (discordIdToClickup[msg.payload.discordId]) {\n    msg.newRecord = false;\n}\n\ndiscordIdToClickup[msg.payload.discordId] = {\n    name: msg.payload.name,\n    clickupToken: msg.payload.clickupToken,\n    clickupId: msg.payload.clickupId,\n}\n\nmsg.discordIdToClickup = discordIdToClickup;\n\nglobal.set('discordIdToClickup', discordIdToClickup);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 320,
+        "wires": [
+            [
+                "44642896b75b5443",
+                "de745372036f9102",
+                "e3443937e17ff425"
+            ]
+        ]
+    },
+    {
+        "id": "44642896b75b5443",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Parse discordIdToClickup to array",
+        "func": "let discordIdToClickup = global.get(\"discordIdToClickup\") || {};\n\nmsg.payload = [];\n    \nObject.keys(discordIdToClickup).forEach(discordId => {\n    msg.payload.push({\n        discordId: `${discordId}`,\n        name: `${discordIdToClickup[discordId].name}`,\n        clickupToken: `${discordIdToClickup[discordId].clickupToken}`,\n        clickupId: `${discordIdToClickup[discordId].clickupId}`,\n    });\n});\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 380,
+        "wires": [
+            [
+                "3fa7e1cf62fdb720",
+                "823bcb6d6d833bba"
+            ]
+        ]
+    },
+    {
+        "id": "d8cf157bbbd280b7",
+        "type": "ui_button",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Refresh button",
+        "group": "2fea291cef3e8285",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "refresh",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#7B2CBE",
+        "className": "",
+        "icon": "refresh",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 160,
+        "y": 380,
+        "wires": [
+            [
+                "44642896b75b5443",
+                "43f30a15adb8d169"
+            ]
+        ]
+    },
+    {
+        "id": "67642877ae652d73",
+        "type": "link in",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "",
+        "links": [],
+        "x": 215,
+        "y": 340,
+        "wires": [
+            [
+                "44642896b75b5443"
+            ]
+        ]
+    },
+    {
+        "id": "43f30a15adb8d169",
+        "type": "link out",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "ceda0d879be7898b"
+        ],
+        "x": 335,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "ceda0d879be7898b",
+        "type": "link in",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "",
+        "links": [
+            "43f30a15adb8d169"
+        ],
+        "x": 595,
+        "y": 260,
+        "wires": [
+            [
+                "de745372036f9102"
+            ]
+        ]
+    },
+    {
+        "id": "de745372036f9102",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Set File Properties",
+        "func": "msg.payload = global.get('discordIdToClickup') || {};\n\nconst basePath = global.get(\"clickUpSettings.dataStorage.basePath\") || \"/data/mappings/clickup\";\n\nmsg.filename = `${basePath}/discordIdToClickup.json`;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 260,
+        "wires": [
+            [
+                "9a0e6c24d8aa5294"
+            ]
+        ]
+    },
+    {
+        "id": "9a0e6c24d8aa5294",
+        "type": "file",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Update discordIdToClickup.json",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 1000,
+        "y": 260,
+        "wires": [
+            [
+                "1bad3af8c539afec"
+            ]
+        ]
+    },
+    {
+        "id": "1bad3af8c539afec",
+        "type": "file in",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Read discordIdToClickup.json",
+        "filename": "",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 1290,
+        "y": 260,
+        "wires": [
+            [
+                "b0e934f5ad2fd040",
+                "e1907a8577867b37"
+            ]
+        ]
+    },
+    {
+        "id": "b0e934f5ad2fd040",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Parse to JSON",
+        "func": "const discordIdToClickup = JSON.parse(msg.payload);\n\nmsg.payload = discordIdToClickup;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1520,
+        "y": 260,
+        "wires": [
+            [
+                "f51cf1272297bceb"
+            ]
+        ]
+    },
+    {
+        "id": "f51cf1272297bceb",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Read discordIdToClickup.json",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1750,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "e3443937e17ff425",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Prepare Notification Message",
+        "func": "const discordId = msg.payload.discordId;\nconst name = msg.payload.name;\n\nlet message = `A record with Discord ID: \"${discordId}\" has been added.`;\n\nif (!msg.newRecord) {\n    message = `Record with Discord ID: \"${discordId}\" has been updated.`;\n}\n\nmsg.payload = message;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 790,
+        "y": 320,
+        "wires": [
+            [
+                "c48a18ef849e2a67"
+            ]
+        ]
+    },
+    {
+        "id": "c48a18ef849e2a67",
+        "type": "ui_toast",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "position": "top right",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 1030,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "3fa7e1cf62fdb720",
+        "type": "ui_table",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "group": "2fea291cef3e8285",
+        "name": "",
+        "order": 4,
+        "width": 15,
+        "height": 9,
+        "columns": [
+            {
+                "field": "discordId",
+                "title": "Discord ID",
+                "width": "150",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "name",
+                "title": "Name",
+                "width": "140",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "clickupToken",
+                "title": "ClickUp Token",
+                "width": "370",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "clickupId",
+                "title": "ClickUp User ID",
+                "width": "",
+                "align": "center",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 1,
+        "cts": true,
+        "x": 710,
+        "y": 380,
+        "wires": [
+            [
+                "5b1828121bf06c71"
+            ]
+        ]
+    },
+    {
+        "id": "5b1828121bf06c71",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Save Data",
+        "func": "msg.topic = `Deseja remover o usuário '${msg.payload.name}' do mapeamento?`;\n\nmsg.user = msg.payload;\n\nmsg.payload = \"O usuário será deletado permanentemente!\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 380,
+        "wires": [
+            [
+                "6adbb0e43b2765e9"
+            ]
+        ]
+    },
+    {
+        "id": "823bcb6d6d833bba",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Update discordIdToClickup",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "6adbb0e43b2765e9",
+        "type": "ui_toast",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "SIM",
+        "cancel": "NÃO",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 1010,
+        "y": 380,
+        "wires": [
+            [
+                "3a5f187e4e4fcbc1"
+            ]
+        ]
+    },
+    {
+        "id": "3a5f187e4e4fcbc1",
+        "type": "switch",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "SIM",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1150,
+        "y": 380,
+        "wires": [
+            [
+                "99cf420dcff23c1a"
+            ]
+        ]
+    },
+    {
+        "id": "99cf420dcff23c1a",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Delete Record",
+        "func": "let discordIdToClickup = global.get('discordIdToClickup');\n\ndelete discordIdToClickup[msg.user.discordId];\n\nglobal.set('discordIdToClickup', discordIdToClickup);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1300,
+        "y": 380,
+        "wires": [
+            [
+                "e8260b8facb02021",
+                "6e4697ad70f3e5b9"
+            ]
+        ]
+    },
+    {
+        "id": "e8260b8facb02021",
+        "type": "link out",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "",
+        "mode": "link",
+        "links": [],
+        "x": 1415,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "6e4697ad70f3e5b9",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Prepare Notification Message",
+        "func": "const discordId = msg.user.discordId;\n\nconst message = `Record with Discord ID: \"${discordId}\" deleted`;\n\nmsg.payload = message;\n\ndelete msg.topic;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1530,
+        "y": 380,
+        "wires": [
+            [
+                "5b7c6efcc87715d5",
+                "318c382f4a24ab20"
+            ]
+        ]
+    },
+    {
+        "id": "5b7c6efcc87715d5",
+        "type": "ui_toast",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "position": "top right",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 1770,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "318c382f4a24ab20",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "Delete a Record in discordIdToClickup",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1840,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "e4f2aaa9fb5f758b",
+        "type": "ui_template",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "group": "287219e837dfc8b2",
+        "name": "Form Style",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    :root {\n      --main-bg-color:#7b2cbe;\n    }\n\n    .row {\n      display: flex;\n      justify-content: center;\n      align-items: center;\n    }\n    \n    .card {\n      border-left: 3px solid var(--main-bg-color);;\n      border-radius: 5px;\n      box-shadow: 7px 7px 13px 0px rgba(50, 50, 50, 0.22);\n      padding: 30px;\n      margin: 20px;\n      width: 400px;\n      transition: all 0.3s ease-out;\n    }\n\n    .card p {\n      color: #a3a5ae;\n      font-size: 16px;\n      overflow: auto;\n    }\n    \n    md-sidenav {\n        background-color: #502773 !important;\n    }\n    .md-list-item-inner > ui-icon,  .md-list-item-inner > p {\n        /*color: white !important;*/\n    }\n    .nr-menu-item-active div button {\n        border-right: 2px solid white;\n    }\n    .body.nr-dashboard-theme md-sidenav div.md-list-item-inner {\n    /*color: white !important;*/\n    }\n    .cardPanel {\n        border: 1px solid black;\n        /*border-radius: 5px;*/\n        padding: 0px 10px 10px 10px;\n        \n    }\n    .cardPanel > .nr-dashboard-cardtitle  {\n        margin-left: 0px !important;\n        margin-bottom: 8px !important;\n        width: auto !important;\n        text-align: center;\n    }\n    .senseUpLogo {\n        /*width: 270px !important;*/\n        /*top: -40px !important;*/\n    }\n    /*button {*/\n        /*width: 100px !important;*/\n    /*    border-radius: 10px !important;*/\n        /*padding-left: 4px !important;*/\n    /*}*/\n\n    .removeButton  {\n        padding: 0px 5px 0px 13px !important;\n    }\n    .refreshButton {\n        padding: 0px 13px 0px 5px !important;\n    }\n    .tabulator {\n        /*width: 290px !important;*/\n        /*padding: -0 1px 0 14px !important;*/\n    }\n    .tabulator-header {\n        border-bottom: 1px solid #7b2cbe !important;\n        /*width: 289px !important;*/\n        color: white !important;\n        margin-left: 0px !important;\n    }\n    .tabulator-cell {\n        border-left: 1px solid #7b2cbe !important;\n        border-right: 1px solid #7b2cbe !important;\n        border-bottom: 1px solid #7b2cbe !important;\n    }\n    .tabulator-col {\n        border-left: 1px solid #7b2cbe !important;\n        border-right: 1px solid #7b2cbe !important;\n        border-top: 1px solid #7b2cbe !important;\n        background-color: #7b2cbe !important;\n        \n    }\n\n</style>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 150,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "90274bcd7ecc2545",
+        "type": "ui_button",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Refresh button",
+        "group": "287219e837dfc8b2",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "refresh",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#7B2CBE",
+        "className": "",
+        "icon": "refresh",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 160,
+        "y": 620,
+        "wires": [
+            [
+                "2a0f0461fda2c567"
+            ]
+        ]
+    },
+    {
+        "id": "10390a276f4e04f0",
+        "type": "inject",
+        "z": "08a6082ba6a858b0",
+        "d": true,
+        "g": "68cb4fbae30108e9",
+        "name": "",
+        "props": [],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 660,
+        "wires": [
+            [
+                "2a0f0461fda2c567"
+            ]
+        ]
+    },
+    {
+        "id": "2a0f0461fda2c567",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Update Form Fields",
+        "func": "const general = global.get(\"clickUpSettings.general\") || {teamId: \"\"};\n\nmsg.payload = {...general};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 640,
+        "wires": [
+            [
+                "f4eb6b09a29a6928"
+            ]
+        ]
+    },
+    {
+        "id": "f4eb6b09a29a6928",
+        "type": "ui_form",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "ClickUp Official API Settings",
+        "label": "ClickUp Official API Settings",
+        "group": "287219e837dfc8b2",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "options": [
+            {
+                "label": "Flow Base Url",
+                "value": "flowBaseUrl",
+                "type": "text",
+                "required": false,
+                "rows": null
+            },
+            {
+                "label": "Team ID",
+                "value": "teamId",
+                "type": "text",
+                "required": false,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "flowBaseUrl": "",
+            "teamId": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "cardPanel",
+        "x": 650,
+        "y": 640,
+        "wires": [
+            [
+                "5c019497857b4ab5",
+                "6ef6a62e87913e05"
+            ]
+        ]
+    },
+    {
+        "id": "5c019497857b4ab5",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Update global.clickUpSettings",
+        "func": "const general = global.get(\"clickUpSettings.general\") || \n{\n    teamId: \"\",\n    flowBaseUrl: \"\",\n};\n\nconst teamId = msg.payload.teamId;\nconst flowBaseUrl = msg.payload.flowBaseUrl;\n\ngeneral.teamId = teamId !== \"\" ? teamId : general.teamId;\ngeneral.flowBaseUrl = flowBaseUrl !== \"\" ? flowBaseUrl : general.flowBaseUrl;\n\nglobal.set(\"clickUpSettings.general\", general);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 660,
+        "wires": [
+            [
+                "d6863b2fc98e61e2"
+            ]
+        ]
+    },
+    {
+        "id": "6ef6a62e87913e05",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Update global.clickUpSettings",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "d6863b2fc98e61e2",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Prepare Notification Message",
+        "func": "msg.payload = `ClickUp Official API Settings has been updated`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 660,
+        "wires": [
+            [
+                "fdfa905915fb51c2"
+            ]
+        ]
+    },
+    {
+        "id": "fdfa905915fb51c2",
+        "type": "ui_toast",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "position": "top right",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 1510,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "b2cc720af5358c25",
+        "type": "ui_button",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Refresh button",
+        "group": "2d0f6d2d5849dbe5",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "refresh",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#7B2CBE",
+        "className": "",
+        "icon": "refresh",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 160,
+        "y": 740,
+        "wires": [
+            [
+                "fe0d4a458c088d2a"
+            ]
+        ]
+    },
+    {
+        "id": "2d7543278b437b80",
+        "type": "inject",
+        "z": "08a6082ba6a858b0",
+        "d": true,
+        "g": "68cb4fbae30108e9",
+        "name": "",
+        "props": [],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 180,
+        "y": 780,
+        "wires": [
+            [
+                "fe0d4a458c088d2a"
+            ]
+        ]
+    },
+    {
+        "id": "fe0d4a458c088d2a",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Update Form Fields",
+        "func": "const dataStorage = global.get(\"clickUpSettings.dataStorage\") || {basePath: \"\"};\n\nmsg.payload = {...dataStorage};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 760,
+        "wires": [
+            [
+                "3f83d6c3bb68d71e"
+            ]
+        ]
+    },
+    {
+        "id": "3f83d6c3bb68d71e",
+        "type": "ui_form",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "ClickUp Official API Settings",
+        "label": "Mapping Storage",
+        "group": "2d0f6d2d5849dbe5",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "options": [
+            {
+                "label": "Base Path",
+                "value": "basePath",
+                "type": "text",
+                "required": false,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "basePath": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "cardPanel",
+        "x": 650,
+        "y": 760,
+        "wires": [
+            [
+                "c80932b5277c5e2b",
+                "150e53e7d41910c5"
+            ]
+        ]
+    },
+    {
+        "id": "150e53e7d41910c5",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Update global.clickUpSettings",
+        "func": "const dataStorage = global.get(\"clickUpSettings.dataStorage\") || {basePath: \"\"};\n\nconst basePath = msg.payload.basePath;\n\ndataStorage.basePath = basePath !== \"\" ? basePath : dataStorage.basePath;\n\nglobal.set(\"clickUpSettings.dataStorage\", dataStorage);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 780,
+        "wires": [
+            [
+                "ca36a6a2c8d37949"
+            ]
+        ]
+    },
+    {
+        "id": "c80932b5277c5e2b",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Update global.clickUpSettings",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "ca36a6a2c8d37949",
+        "type": "function",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "name": "Prepare Notification Message",
+        "func": "msg.payload = `Mapping Storage has been updated`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 780,
+        "wires": [
+            [
+                "ba0129d182d2ba18"
+            ]
+        ]
+    },
+    {
+        "id": "ba0129d182d2ba18",
+        "type": "ui_toast",
+        "z": "08a6082ba6a858b0",
+        "g": "68cb4fbae30108e9",
+        "position": "top right",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 1510,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "0d83ab0a39cf4b13",
+        "type": "catch",
+        "z": "08a6082ba6a858b0",
+        "name": "Catch All Errors",
+        "scope": null,
+        "uncaught": false,
+        "x": 140,
+        "y": 980,
+        "wires": [
+            [
+                "de76cc9b82f59864",
+                "164708bf6bd8f2ac"
+            ]
+        ]
+    },
+    {
+        "id": "de76cc9b82f59864",
+        "type": "change",
+        "z": "08a6082ba6a858b0",
+        "name": "Prepare Notification",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "error.message",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 340,
+        "y": 980,
+        "wires": [
+            [
+                "c320e2a39a693750"
+            ]
+        ]
+    },
+    {
+        "id": "c320e2a39a693750",
+        "type": "ui_toast",
+        "z": "08a6082ba6a858b0",
+        "position": "top right",
+        "displayTime": "5",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "",
+        "x": 550,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "164708bf6bd8f2ac",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "name": "[ClickUp] Dashboard Error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 360,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "e1907a8577867b37",
+        "type": "debug",
+        "z": "08a6082ba6a858b0",
+        "g": "c6aad73a94e50c9a",
+        "name": "File Content",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1510,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "21fec1141a7e3d9b",
+        "type": "ui_group",
+        "z": "08a6082ba6a858b0",
+        "name": "Update",
+        "tab": "d8d7819d24461090",
+        "order": 1,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": "cardPanel"
+    },
+    {
+        "id": "d8d7819d24461090",
+        "type": "ui_tab",
+        "z": "08a6082ba6a858b0",
+        "name": "Discord ID -> ClickUp User Info",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "2fea291cef3e8285",
+        "type": "ui_group",
+        "z": "08a6082ba6a858b0",
+        "name": "Mapping",
+        "tab": "d8d7819d24461090",
+        "order": 1,
+        "disp": true,
+        "width": "15",
+        "collapse": false,
+        "className": "cardPanel"
+    },
+    {
+        "id": "ec7624c4735d4511",
+        "type": "ui_tab",
+        "z": "08a6082ba6a858b0",
+        "name": "ClickUp Settings",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "287219e837dfc8b2",
+        "type": "ui_group",
+        "z": "08a6082ba6a858b0",
+        "name": "General",
+        "tab": "ec7624c4735d4511",
+        "order": 1,
+        "disp": true,
+        "width": "9",
+        "collapse": false,
+        "className": "cardPanel"
+    },
+    {
+        "id": "2d0f6d2d5849dbe5",
+        "type": "ui_group",
+        "z": "08a6082ba6a858b0",
+        "name": "Storage",
+        "tab": "ec7624c4735d4511",
+        "order": 2,
+        "disp": true,
+        "width": "9",
+        "collapse": false,
+        "className": "cardPanel"
+    },
+    {
+        "id": "306704e6b7593f63",
+        "type": "ui_spacer",
+        "z": "08a6082ba6a858b0",
+        "name": "spacer",
+        "group": "21fec1141a7e3d9b",
+        "order": 3,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "b87ecb6cd3a8a09b",
+        "type": "ui_spacer",
+        "z": "08a6082ba6a858b0",
+        "name": "spacer",
+        "group": "21fec1141a7e3d9b",
+        "order": 5,
+        "width": 10,
+        "height": 1
+    },
+    {
+        "id": "2335ed2c605eee20",
+        "type": "ui_spacer",
+        "z": "08a6082ba6a858b0",
+        "name": "spacer",
+        "group": "2fea291cef3e8285",
+        "order": 3,
+        "width": 12,
+        "height": 1
+    },
+    {
+        "id": "0bb2533927a0f866",
+        "type": "tab",
+        "label": "Dashboard UI ClickUp",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "18ef8c4d93c7ccaf",
+        "type": "group",
+        "z": "0bb2533927a0f866",
+        "name": "DEV",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "786e9d31509e4040",
+            "68db435ac30a4250",
+            "6c38df3628d9e527",
+            "2c311c5f90076db3"
+        ],
+        "x": 54,
+        "y": 159,
+        "w": 1312,
+        "h": 82
+    },
+    {
+        "id": "786e9d31509e4040",
+        "type": "inject",
+        "z": "0bb2533927a0f866",
+        "g": "18ef8c4d93c7ccaf",
+        "name": "Get discordIdToClickup Mapping",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 240,
+        "y": 200,
+        "wires": [
+            [
+                "68db435ac30a4250"
+            ]
+        ]
+    },
+    {
+        "id": "68db435ac30a4250",
+        "type": "file in",
+        "z": "0bb2533927a0f866",
+        "g": "18ef8c4d93c7ccaf",
+        "name": "",
+        "filename": "/data/mappings/discordIdToClickup.json",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 570,
+        "y": 200,
+        "wires": [
+            [
+                "2c311c5f90076db3"
+            ]
+        ]
+    },
+    {
+        "id": "6c38df3628d9e527",
+        "type": "debug",
+        "z": "0bb2533927a0f866",
+        "g": "18ef8c4d93c7ccaf",
+        "name": "CHANGE discordIdToClickup IN GLOBAL",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1150,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "2c311c5f90076db3",
+        "type": "function",
+        "z": "0bb2533927a0f866",
+        "g": "18ef8c4d93c7ccaf",
+        "name": "Parse File Response",
+        "func": "const discordIdToClickup = JSON.parse(msg.payload);\n\nmsg.payload = discordIdToClickup;\n\nglobal.set(\"discordIdToClickup\", discordIdToClickup);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 200,
+        "wires": [
+            [
+                "6c38df3628d9e527"
+            ]
+        ]
+    },
+    {
+        "id": "c9742bb5d4de90a4",
+        "type": "subflow:08a6082ba6a858b0",
+        "z": "0bb2533927a0f866",
+        "name": "",
+        "x": 240,
+        "y": 80,
+        "wires": []
+    }
+]

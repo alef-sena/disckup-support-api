@@ -1,0 +1,662 @@
+openapi: 3.0.0
+info:
+  title: ClickUp API
+  version: 2.1.0
+  description: API designed to carry out activities with SenseUp's ClickUp Board.
+  contact:
+    name: SenseUp
+    url: 'https://senseup.tech/site/contact/'
+    email: contact@senseup.tech
+servers:
+  - url: 'https://demo.senseup.dev.br/flows/discord-bots/clickup/v2'
+    description: PRD
+  - description: DEV (Senseflow)
+    url: 'http://localhost:1880/clickup/v2'
+paths:
+  /comments:
+    parameters: []
+    post:
+      summary: Post a comment
+      operationId: post-comments
+      responses:
+        '200':
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    discordUserId: '498498165165468'
+                    clickupUserId: 51698548
+                    taskId: we9f84w9e
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/we9f84w9e'
+                    comment:
+                      - text: 'Hi '
+                        attributes:
+                          bold: true
+                          italic: true
+                      - text: 'John Doe! '
+                        bold: true
+                      - text: Let's work!
+                        attributes:
+                          italic: true
+                      - type: tag
+                        user:
+                          id: '51698548'
+                    attachments:
+                      - name: my-beautiful-image.png
+                        url: 'https://myimage.com'
+                properties:
+                  discordUserId:
+                    type: string
+                  clickupUserId:
+                    type: integer
+                  taskId:
+                    type: string
+                  taskName:
+                    type: string
+                  taskUrl:
+                    type: string
+                  comment:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        attributes:
+                          type: object
+                          properties:
+                            bold:
+                              type: boolean
+                            italic:
+                              type: boolean
+                        type:
+                          type: string
+                        user:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                  attachments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        url:
+                          type: string
+                required:
+                  - discordUserId
+                  - clickupUserId
+                  - taskId
+                  - taskName
+                  - taskUrl
+                  - comment
+                  - attachments
+              examples:
+                example-simple-comment:
+                  value:
+                    discordUserId: '498498165165468'
+                    clickupUserId: 51698548
+                    taskId: we9f84w9e
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/we9f84w9e'
+                    comment:
+                      - text: Hi team!
+                    attachments: []
+                example-user-mention:
+                  value:
+                    discordUserId: '498498165165468'
+                    clickupUserId: 51698548
+                    taskId: we9f84w9e
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/we9f84w9e'
+                    comment:
+                      - text: 'Hi '
+                      - type: tag
+                        user:
+                          id: '51698548'
+                      - text: '! Let''s work!'
+                    attachments: []
+                example-italic:
+                  value:
+                    discordUserId: '498498165165468'
+                    clickupUserId: 51698548
+                    taskId: we9f84w9e
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/we9f84w9e'
+                    comment:
+                      - text: 'Hi John Doe! '
+                      - text: Let's work!
+                        attributes:
+                          italic: true
+                      - text: ''
+                    attachments: []
+                example-bold:
+                  value:
+                    discordUserId: '498498165165468'
+                    clickupUserId: 51698548
+                    taskId: we9f84w9e
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/we9f84w9e'
+                    comment:
+                      - text: 'Hi John Doe! '
+                      - text: Let's work!
+                        attributes:
+                          bold: true
+                      - text: ''
+                    attachments: []
+                example-bold-italic:
+                  value:
+                    discordUserId: '498498165165468'
+                    clickupUserId: 51698548
+                    taskId: we9f84w9e
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/we9f84w9e'
+                    comment:
+                      - text: 'Hi John Doe! '
+                      - text: Let's work!
+                        attributes:
+                          bold: true
+                          italic: true
+                      - text: ''
+                    attachments: []
+                example-attachment:
+                  value:
+                    discordUserId: '498498165165468'
+                    clickupUserId: 51698548
+                    taskId: we9f84w9e
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/we9f84w9e'
+                    comment:
+                      - text: ''
+                    attachments:
+                      - name: my-beautiful-image.png
+                        url: 'https://myimage.com'
+        '401':
+          description: Incorrect Task ID or empty Comment
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Incorrect taskId or empty comment
+                    details: Please refer to the errors property for additional details.
+                    status: 401
+                    type: 'https://httpstatuses.com/401'
+                    errors:
+                      - Incorrect taskId or empty comment
+              examples:
+                example:
+                  value:
+                    title: Incorrect taskId or empty comment
+                    details: Please refer to the errors property for additional details.
+                    status: 401
+                    type: 'https://httpstatuses.com/401'
+                    errors:
+                      - Incorrect taskId or empty comment
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Property "discordId" not found in database
+                    details: Please refer to the errors property for additional details.
+                    status: 404
+                    type: 'https://httpstatuses.com/404'
+                    errors:
+                      - 'Property: "discordId" not found in database'
+              examples:
+                example:
+                  value:
+                    title: Property "discordId" not found in database
+                    details: Please refer to the errors property for additional details.
+                    status: 404
+                    type: 'https://httpstatuses.com/404'
+                    errors:
+                      - 'Property: "discordId" not found in database'
+        '412':
+          description: Missing Required Params
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Missing params or body elements
+                    details: Please refer to the errors property for additional details.
+                    status: 412
+                    type: 'https://httpstatuses.com/412'
+                    errors:
+                      - Missing Discord ID in params
+              examples:
+                example:
+                  value:
+                    title: Missing params or body elements
+                    details: Please refer to the errors property for additional details.
+                    status: 412
+                    type: 'https://httpstatuses.com/412'
+                    errors:
+                      - Missing Discord ID in params
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Internal Server Error
+                    details: Please refer to the errors property for additional details.
+                    status: 500
+                    type: 'https://httpstatuses.com/500'
+                    errors:
+                      - 'An error occurred while processing the request to the ClickUp REST API. Error: ''RequestError: getaddrinfo ENOTFOUND a'''
+              examples:
+                example:
+                  value:
+                    title: Internal Server Error
+                    details: Please refer to the errors property for additional details.
+                    status: 500
+                    type: 'https://httpstatuses.com/500'
+                    errors:
+                      - 'An error occurred while processing the request to the ClickUp REST API. Error: ''RequestError: getaddrinfo ENOTFOUND www.forceerror.com'''
+      description: Post a comment on a ClickUp task.
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Content-Type
+          description: '"application/json"'
+          required: true
+        - $ref: '#/components/parameters/discordId'
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  comment: Hi team !
+                  attachments:
+                    - name: my-beautiful-image.png
+                      url: 'https://myimage.com'
+              properties:
+                comment:
+                  type: string
+                attachments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      url:
+                        type: string
+              required:
+                - comment
+            examples:
+              example-simple-comment:
+                value:
+                  comment: Hi team!
+              example-attachment:
+                value:
+                  comment: Evidence of the task in the attachment.
+                  attachments:
+                    - name: my-beautiful-image.png
+                      url: 'https://myimage.com'
+              example-mention:
+                value:
+                  comment: Hi <@498498165165468>!
+              example-bold-italic:
+                value:
+                  comment: '***Hi team!***'
+              example-bold:
+                value:
+                  comment: '**Hi team!**'
+              example-italic:
+                value:
+                  comment: '*Hi team!*'
+        description: ''
+  '/tasks/{taskId}':
+    get:
+      summary: Get Task
+      tags: []
+      responses:
+        '200':
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  taskName:
+                    type: string
+                  taskUrl:
+                    type: string
+                x-examples:
+                  example-1:
+                    taskName: Teste do Bot V2
+                    taskUrl: 'https://app.clickup.com/t/86dr95p2w'
+              examples:
+                example-200:
+                  value:
+                    taskName: My beautiful task
+                    taskUrl: 'https://app.clickup.com/t/86dr95p2w'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Unauthorized User
+                    details: Please refer to the errors property for additional details.
+                    status: 401
+                    type: 'https://httpstatuses.com/401'
+                    errors:
+                      - Unauthorized user
+              examples:
+                example-401:
+                  value:
+                    title: Unauthorized User
+                    details: Please refer to the errors property for additional details.
+                    status: 401
+                    type: 'https://httpstatuses.com/401'
+                    errors:
+                      - Unauthorized user
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: 'Property: "discordId" not found in database'
+                    details: Please refer to the errors property for additional details.
+                    status: 404
+                    type: 'https://httpstatuses.com/400'
+                    errors:
+                      - 'Property: "discordId" not found in database'
+              examples:
+                example-discord-id-404:
+                  value:
+                    title: 'Property: "discordId" not found in database'
+                    details: Please refer to the errors property for additional details.
+                    status: 404
+                    type: 'https://httpstatuses.com/400'
+                    errors:
+                      - 'Property: "discordId" not found in database'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Internal Server Error
+                    details: Please refer to the errors property for additional details.
+                    status: 500
+                    type: 'https://httpstatuses.com/500'
+                    errors:
+                      - 'An error occurred while processing the request to the Azure DevOps REST API. Error: ''RequestError: getaddrinfo ENOTFOUND a'''
+              examples:
+                example-500:
+                  value:
+                    title: Internal Server Error
+                    details: Please refer to the errors property for additional details.
+                    status: 500
+                    type: 'https://httpstatuses.com/500'
+                    errors:
+                      - 'An error occurred while processing the request to the Azure DevOps REST API. Error: ''RequestError: getaddrinfo ENOTFOUND www.forceerror.com'''
+      operationId: get-task
+      description: Get information about an ClickUp board task
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+        - $ref: '#/components/parameters/discordId'
+    parameters:
+      - schema:
+          type: string
+        name: taskId
+        in: path
+        required: true
+        description: ClickUp task ID
+  /mappings:
+    get:
+      summary: Get Mapping File
+      tags: []
+      responses:
+        '200':
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    '397721928435105794':
+                      name: Álef Sena
+                      clickupToken: pk_43090120_BZ7U0CAYKR25NBEVO908SOMD66RSC4HX
+                      clickupId: '43090120'
+                properties:
+                  <discord-user-id>:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      clickupToken:
+                        type: string
+                      clickupId:
+                        type: string
+              examples:
+                example-200:
+                  value:
+                    '6516549874981':
+                      name: John Doe
+                      clickupToken: pk_54785216_9U213HR87213YR1HR9U8
+                      clickupId: '54785216'
+        '412':
+          description: Precondition Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Missing params elements
+                    details: Please refer to the errors property for additional details.
+                    status: 412
+                    type: 'https://httpstatuses.com/412'
+                    errors:
+                      - Missing mapping name in query params
+              examples:
+                example-mapping-404:
+                  value:
+                    title: Missing params elements
+                    details: Please refer to the errors property for additional details.
+                    status: 412
+                    type: 'https://httpstatuses.com/412'
+                    errors:
+                      - Missing mapping name in query params
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  details:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                x-examples:
+                  example-1:
+                    title: Internal Server Error
+                    details: Please refer to the errors property for additional details.
+                    status: 500
+                    type: 'https://httpstatuses.com/500'
+                    errors:
+                      - 'An error occurred while processing the request to the Azure DevOps REST API. Error: ''Error: ENOENT: no such file or directory, open ''a'''''
+              examples:
+                example-500:
+                  value:
+                    title: Internal Server Error
+                    details: Please refer to the errors property for additional details.
+                    status: 500
+                    type: 'https://httpstatuses.com/500'
+                    errors:
+                      - 'An error occurred while processing the request to the Azure DevOps REST API. Error: ''Error: ENOENT: no such file or directory, open ''my/mapping/path'''''
+      operationId: get-mapping
+      description: Get mapping files
+      parameters:
+        - $ref: '#/components/parameters/mappingName'
+    parameters: []
+components:
+  schemas: {}
+  securitySchemes: {}
+  parameters:
+    mappingName:
+      name: mappingName
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Mapping Name
+    discordId:
+      name: discordId
+      in: query
+      required: true
+      schema:
+        type: string
+      description: Discord User ID
+    taskId:
+      name: taskId
+      in: query
+      required: true
+      schema:
+        type: string
+      description: ClickUp Task ID
